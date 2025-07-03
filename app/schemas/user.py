@@ -1,20 +1,24 @@
+# schemas/user.py
 import uuid
 from enum import Enum
-from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
 class RoleEnum(str, Enum):
-    user: "user"
+    user = "user"
     admin = "admin"
 
 
-class UserSchemas(BaseModel):
-    id: Optional[uuid.UUID] = None
+class UserCreate(BaseModel):
     email: EmailStr
-    password: Optional[str] = Field(default=None, description="Не захешированный пароль пользователя")  # noqa
-    hashed_password: Optional[str] = Field(default=None, description="Захешированный пароль пользователя") # noqa
+    password: str = Field(..., min_length=8)
     role: RoleEnum = RoleEnum.user
+
+
+class UserOut(BaseModel):
+    id: uuid.UUID
+    email: EmailStr
+    role: RoleEnum
 
     class Config:
         orm_mode = True
